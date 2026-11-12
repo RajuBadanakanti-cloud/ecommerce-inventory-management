@@ -13,7 +13,10 @@ import errorMiddleware from "./middlewares/globalErrorMid.js"
 const app = express()
 app.use(helmet())
 app.use(express.json())
-app.use(cors()) // frontend link here
+app.use(cors({
+    origin:process.env.CLIENT_URL,
+    credentials:true
+})) // frontend link here
 connectDB() // mongodb connected
 
 app.use("/api/auth", authRoutes)

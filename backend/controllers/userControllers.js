@@ -6,7 +6,20 @@ import mongoose from "mongoose"
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
 
-    const users = await User.find().select("name email")
+    // pagination >>
+    const query = req.query
+    const page = Math.max(1, Number.parseInt(query.page, 10) || 1)
+    const limit = Math.max(1, Number.parseInt(query.limit, 10) || 10)
+
+    const skip = (page - 1) * limit
+
+    const users = await User.find()
+    .select("name email")
+    .skip(skip)
+    .limit(limit)
+    .lean()
+    
+
     if(!users){
         return next(new AppError("User not found!", 404))
     }
