@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 dotenv.config()
 import helmet from "helmet"
 import cors from "cors"
+import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js"
 
 import authRoutes from "./routes/authRoutes.js"
@@ -18,6 +19,7 @@ app.use(cors({
     credentials:true
 })) // frontend link here
 connectDB() // mongodb connected
+app.use(cookieParser());
 
 app.use("/api/auth", authRoutes)
 app.use("/api/user", userRoutes)
