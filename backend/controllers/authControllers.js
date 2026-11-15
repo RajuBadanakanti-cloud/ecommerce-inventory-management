@@ -402,4 +402,26 @@ export const logoutUser = catchAsync(async (req, res, next) => {
 })
 
 
+export const getMe = catchAsync(async (req, res) => {
+
+    const user = req.user;
+    if(!user){
+        return next(new AppError("Sorry, user not logged in!", 401))
+    }
+
+    res.status(200).json({
+        success: true,
+        user: {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            provider: user.provider,
+            isVerified: user.isVerified,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt
+        }
+    });
+
+});
 
