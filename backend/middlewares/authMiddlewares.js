@@ -1,7 +1,7 @@
 import catchAsync from "../utils/catchAsync.js";
 import AppError from "../utils/AppError.js";
 import jwt from "jsonwebtoken";
-import User from "../model/User.js"
+import User from "../models/User.js"
 
 // protected middleware >>
 export const protect = catchAsync(async (req, res, next) => {
@@ -42,7 +42,7 @@ export const protect = catchAsync(async (req, res, next) => {
 
 
 // admin permissions >>
-export const redirectTo = (...roles) => {
+export const restrictTo = (...roles) => {
     return (req, res, next) => {
         if(!roles.includes(req.user.role) ){
             return next(new AppError("Access Denied: You do not have a permission to perform this action", 403)) //imp

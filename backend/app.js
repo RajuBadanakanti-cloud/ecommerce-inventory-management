@@ -8,6 +8,13 @@ import connectDB from "./config/db.js"
 
 import authRoutes from "./routes/authRoutes.js"
 import userRoutes from "./routes/userRoutes.js"
+import categoryRoutes from "./routes/categoryRoutes.js"
+import productRoutes from "./routes/productRoutes.js"
+import cartRoutes from "./routes/cartRoutes.js"
+import orderRoutes from "./routes/orderRoutes.js"
+import paymentRoutes from "./routes/paymentRoutes.js";
+import analyticsRoutes from "./routes/analyticsRoutes.js"
+
 
 import errorMiddleware from "./middlewares/globalErrorMid.js"
 
@@ -21,9 +28,16 @@ app.use(cors({
 connectDB() // mongodb connected
 app.use(cookieParser());
 
+
 app.use("/api/auth", authRoutes)
 app.use("/api/user", userRoutes)
-
+app.use("/api/category", categoryRoutes) // category
+app.use("/api/product", productRoutes) // products
+app.use("/api/cart", cartRoutes) // cart
+app.use("/api/orders", orderRoutes); // order
+app.use("/api/payments", paymentRoutes); // payment
+// Admin Access >>
+app.use("/api/analytics", analyticsRoutes); // dashboard
 
 
 app.get("/", (req, res, next) => {
