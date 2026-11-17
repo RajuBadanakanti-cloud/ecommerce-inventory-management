@@ -1,6 +1,9 @@
+import dotenv from "dotenv"
+dotenv.config()
 import catchAsync from "../utils/catchAsync.js"
 import AppError from "../utils/AppError.js"
 import User from "../models/User.js";
+import {refreshCookieOptions} from "../utils/cookieOptions.js"
 
 // forgot
 import crypto from "crypto";
@@ -11,9 +14,6 @@ import {
   hashToken,
 } from "../utils/jwtTokens.js";
 
-import {
-  refreshCookieOptions,
-} from "../utils/cookieOptions.js";
 
 
 // register >>
@@ -221,6 +221,7 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
 
   // Create reset URL
   const resetURL = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
+  console.log(resetURL, "<< RESET >>")
 
   // Send email
 
@@ -402,6 +403,88 @@ export const logoutUser = catchAsync(async (req, res, next) => {
 })
 
 
+
+// refreshtoken generating >>
+export const refreshAccessToken = catchAsync(async (req, res, next) => {
+
+  // Get refresh token from HttpOnly cookie
+  const refreshToken = req.cookies?.refreshToken;
+
+  if (!refreshToken) {
+    return next(
+      new AppError("Refresh token missing. Please login again.", 401)
+    );
+  }
+
+  // Verify refresh token
+  let decoded;
+
+  try {
+    decoded = jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET
+    );
+  } catch (error) {
+    res.clearCookie("refreshToken", refreshCookieOptions);
+
+    return next(
+      new AppError("Invalid or expired refresh token. Please login again.", 401)
+    );
+  }
+
+  // Find user and retrieve stored refresh token hash
+  const user = await User.findById(decoded.id)
+    .select("+refreshToken");
+
+  if (!user || !user.isActive || !user.refreshToken) {
+    res.clearCookie("refreshToken", refreshCookieOptions);
+
+    return next(
+      new AppError("Invalid session. Please login again.", 401)
+    );
+  }
+
+  // Compare incoming refresh token hash with database
+  const hashedRefreshToken = hashToken(refreshToken);
+
+  if (hashedRefreshToken !== user.refreshToken) {
+    res.clearCookie("refreshToken", refreshCookieOptions);
+
+    return next(
+      new AppError("Refresh token mismatch. Please login again.", 401)
+    );
+  }
+
+  // Generate new access and refresh tokens
+  const {
+    accessToken,
+    refreshToken: newRefreshToken,
+  } = jwtTokens(user);
+
+  // 6. Store new refresh token hash in MongoDB
+  user.refreshToken = hashToken(newRefreshToken);
+
+  await user.save();
+
+  // 7. Set rotated refresh token in HttpOnly cookie
+  res.cookie(
+    "refreshToken",
+    newRefreshToken,
+    refreshCookieOptions
+  );
+
+  // Return new access token
+  return res.status(200).json({
+    success: true,
+    message: "Access token refreshed successfully",
+    accessToken,
+  });
+
+});
+
+
+
+// profile cheching >>
 export const getMe = catchAsync(async (req, res) => {
 
     const user = req.user;

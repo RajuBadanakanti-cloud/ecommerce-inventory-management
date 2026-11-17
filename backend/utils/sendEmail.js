@@ -19,7 +19,7 @@ const transporter = nodemailer.createTransport({
 // mail format  
 const sendEmail = async (options) => {
   return await transporter.sendMail({
-    from: `"E-commerce Support" <${process.env.EMAIL_USER}>`,
+    from: `"Shop Sphere: e-commerce Support" <${process.env.EMAIL_USER}>`,
     to: options.email,
     subject: options.subject, // subject
     text: options.message,
