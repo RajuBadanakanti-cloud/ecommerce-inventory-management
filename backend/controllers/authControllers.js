@@ -1,6 +1,6 @@
 import catchAsync from "../utils/catchAsync.js"
 import AppError from "../utils/AppError.js"
-import User from "../model/User.js";
+import User from "../models/User.js";
 
 // forgot
 import crypto from "crypto";

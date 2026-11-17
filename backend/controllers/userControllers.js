@@ -1,4 +1,4 @@
-import User from "../model/User.js"
+import User from "../models/User.js"
 import catchAsync from "../utils/catchAsync.js"
 import AppError from "../utils/AppError.js"
 import mongoose from "mongoose"
