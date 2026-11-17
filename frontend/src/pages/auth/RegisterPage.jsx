@@ -1,106 +1,181 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { ShoppingBag, ArrowRight } from 'lucide-react';
+import { ShoppingBag, ArrowRight, LoaderCircle, Lock, Eye, EyeOff, UserRound, Mail } from 'lucide-react';
 
 export default function RegisterPage() {
-  const { register } = useAuth();
+  const [showPassword, setShowPassword] = useState(false);
+  const { register, loading, error, setError, errorMsg } = useAuth();
   const navigate = useNavigate();
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [formDetails, setFormDetails] = useState({
+    name:"",
+    email:"",
+    password:""
+  })
 
+{/* form Submission */}
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setLoading(true);
+    console.log(formDetails, "formDetails")
+     const success = await register(formDetails);
+     if(success){
+        navigate("/", {replace:true})
+     }
+
+  /*
     try {
-      await register(name, email, password);
+      await register(formDetails);
       navigate('/products');
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
+      */
   };
 
   return (
-    <div className="container" style={{ padding: '60px 20px', maxWidth: '440px' }}>
-      <div className="card" style={{ padding: '36px' }}>
-        
-        <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-          <div style={{ backgroundColor: 'var(--secondary)', color: '#fff', width: '48px', height: '48px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
-            <ShoppingBag size={24} />
+    <div className="mx-auto flex max-w-7xl items-center justify-center px-5 py-16 sm:px-8">
+      <div className="w-full max-w-110 rounded-3xl border border-slate-200/80 bg-white p-8 sm:p-10 shadow-xl shadow-slate-900/5">
+
+        <div className="text-center mb-8">
+          <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-600/25">
+            <ShoppingBag size={26} />
           </div>
-          <h1 style={{ fontSize: '24px', fontWeight: '800', color: 'var(--primary)' }}>Create Account</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>
+          <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 sm:text-3xl">Create Account</h1>
+          <p className="mt-1.5 text-sm text-slate-500">
             Join ShopSphere for seamless ordering and tracking
           </p>
         </div>
 
-        {error && (
-          <div style={{ backgroundColor: 'var(--error-bg)', color: 'var(--error)', border: '1px solid #FECACA', padding: '10px 14px', borderRadius: '6px', fontSize: '13px', marginBottom: '18px' }}>
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">Full Name</label>
-            <input
-              type="text"
-              required
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Rahul Sharma"
-              className="form-input"
-            />
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">Email Address</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@example.com"
-              className="form-input"
-            />
+        {/* Form */}
+        <form id="register-form" onSubmit={handleSubmit} className="space-y-5">
+          {/* Name */}
+          <div>
+            <label className="flex items-center text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Full Name
+                <p className='text-red-500 text-sm md:text-base ml-1'>*</p>
+            </label>
+            <div className="relative">
+              <span className="absolute left-3.5 top-3.5 text-slate-400">
+                <UserRound size={18} />
+              </span>
+              <input
+                type="text"
+                required
+                value={formDetails.name}
+                minLength={3}
+                onChange={(e) => setFormDetails({
+                  ...formDetails,
+                  name: e.target.value
+                })}
+                placeholder="e.g. Satchin Tendulkar"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-11 pr-4 py-3.5 text-sm text-slate-950 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+              />
+            </div>
           </div>
 
-          <div className="form-group" style={{ marginBottom: '24px' }}>
-            <label className="form-label">Password (min 6 chars)</label>
-            <input
-              type="password"
-              required
-              minLength={6}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              className="form-input"
-            />
+          {/*  Email */}
+          <div>
+            <label className="flex items-center text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Email Address
+              <p className='text-red-500 text-sm md:text-base ml-1'>*</p>
+            </label>
+            <div className="relative">
+              <span className="absolute left-3.5 top-3.5 text-slate-400">
+                <Mail size={18} />
+              </span>
+              <input
+                type="email"
+                required
+                value={formDetails.email}
+                onChange={(e) => {setFormDetails({
+                  ...formDetails,
+                  email: e.target.value
+                }), setError(false)}}
+                placeholder="name@example.com"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 pl-11 pr-4 py-3.5 text-sm text-slate-950 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+              />
+            </div>
           </div>
 
+          {/* Password */}
+          <div className="mb-6">
+            <label htmlFor='password' className="flex items-center text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">Password
+                <p className='text-red-500 text-sm md:text-base ml-1'>*</p>
+            </label>
+            <div className="relative">
+              <span className="absolute left-3.5 top-3.5 text-slate-400">
+                <Lock size={18} />
+              </span>
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                required
+                value={formDetails.password}
+                onChange={(e) => {
+                    setFormDetails({
+                      ...formDetails,
+                      password: e.target.value
+                    }),
+                    setError(false)
+                  }}
+                placeholder="Create your password"
+                className="w-full pl-11 pr-12 py-3.5 rounded-xl border border-slate-200 bg-slate-50 text-sm text-slate-950 focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all"
+              />
+              {/* password show/hide */}
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600 transition-colors focus:outline-none"
+                aria-label="Toggle password visibility"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+
+            </div>
+          </div>
+
+        {/* error message */}
+          {error &&
+          <div className='py-1.5 px-2 text-center text-base md:text-base flex items-center justify-center w-full bg-red-200 border border-red-400 rounded'>
+              <p className='text-blue-950'>{errorMsg}</p>
+          </div>
+          }
+
+          {/* Button */}
           <button
             type="submit"
             disabled={loading}
-            className="btn btn-primary btn-lg"
-            style={{ width: '100%', backgroundColor: 'var(--secondary)' }}
+            className="w-full group inline-flex items-center justify-center gap-2 rounded-xl bg-blue-600 py-4 text-sm font-semibold text-white shadow-xl shadow-blue-600/25
+            hover:bg-blue-500 transition-all duration-200 ease-in disabled:opacity-80 cursor-pointer"
           >
-            {loading ? 'Creating...' : 'Create Account'} <ArrowRight size={18} />
+            {loading ? (
+              <span className="flex items-center gap-2">
+                <LoaderCircle className="h-4 w-4 animate-spin" />
+                Creating..
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                Sign Up
+                <ArrowRight className="h-4 w-4 transition-transform duration-300 ease-in-out group-hover:translate-x-1" />
+              </span>
+            )}
           </button>
-        </form>
 
-        <p style={{ textAlign: 'center', fontSize: '14px', color: 'var(--text-secondary)', marginTop: '24px' }}>
+        </form>
+        {/* login link */}
+        {loading ? (
+          <p className="mt-6 text-center text-sm text-slate-500">
+            Creating your account, please wait...
+          </p>
+        ) : ( <p className="mt-6 text-center text-sm text-slate-500">
           Already have an account?{' '}
-          <Link to="/login" style={{ color: 'var(--secondary)', fontWeight: '600' }}>
+          <Link to="/login" className="font-semibold text-blue-600 hover:text-blue-700 transition-colors">
             Sign in
           </Link>
-        </p>
+          </p>
+          )
+        }
 
       </div>
     </div>

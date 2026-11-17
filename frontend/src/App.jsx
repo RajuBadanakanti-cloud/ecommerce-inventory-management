@@ -1,4 +1,3 @@
-import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -15,6 +14,8 @@ import OrdersPage from './pages/customer/OrdersPage';
 // Auth Pages
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 
 // Admin Pages
 import AdminLayout from './layouts/AdminLayout';
@@ -38,14 +39,18 @@ export default function App() {
                 <Routes>
                   <Route path="/" element={<HomePage />} />
                   <Route path="/products" element={<ProductListPage />} />
-                  <Route path="/products/:id" element={<ProductDetailPage />} />
+                  <Route path="/product/:id" element={<ProductDetailPage />} />
                   <Route path="/cart" element={<CartPage />} />
                   <Route path="/checkout" element={<CheckoutPage />} />
                   <Route path="/payment/:orderId" element={<MockPaymentPage />} />
                   <Route path="/orders" element={<OrdersPage />} />
+                  {/* Authentication >>>> */}
                   <Route path="/login" element={<LoginPage />} />
                   <Route path="/register" element={<RegisterPage />} />
+                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                  <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
                   <Route path="*" element={<NotFound />} />
+
                 </Routes>
               </main>
               <Footer />
