@@ -14,6 +14,11 @@ import cartRoutes from "./routes/cartRoutes.js"
 import orderRoutes from "./routes/orderRoutes.js"
 import paymentRoutes from "./routes/paymentRoutes.js";
 import analyticsRoutes from "./routes/analyticsRoutes.js"
+import inventoryRoutes from "./routes/inventoryRoutes.js";
+import couponRoutes from "./routes/couponRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
+
+
 
 
 import errorMiddleware from "./middlewares/globalErrorMid.js"
@@ -36,8 +41,14 @@ app.use("/api/product", productRoutes) // products
 app.use("/api/cart", cartRoutes) // cart
 app.use("/api/orders", orderRoutes); // order
 app.use("/api/payments", paymentRoutes); // payment
+app.use("/api/reviews", reviewRoutes); // reviews
+
 // Admin Access >>
 app.use("/api/analytics", analyticsRoutes); // dashboard
+app.use("/api/inventory", inventoryRoutes); // inventory
+app.use("/api/coupons", couponRoutes); // coupons
+
+
 
 
 app.get("/", (req, res, next) => {

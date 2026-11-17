@@ -5,7 +5,7 @@ import User from "../models/User.js"
 
 // protected middleware >>
 export const protect = catchAsync(async (req, res, next) => {
-    // token    
+    // token
     let token;
         if(req.headers.authorization && req.headers.authorization.startsWith("Bearer ")){
             token = req.headers.authorization.split(" ")[1]
@@ -13,8 +13,8 @@ export const protect = catchAsync(async (req, res, next) => {
         if(!token){
             return next(new AppError("You are not logged in, Please login!", 401))
         }
-    
-    // decode 
+
+    // decode
     let decode;
     decode = await jwt.verify(token, process.env.JWT_ACCESS_SECRET)
     if(!decode){
@@ -26,6 +26,14 @@ export const protect = catchAsync(async (req, res, next) => {
     if(!currentCustomer){
         return next(new AppError("You no more longger exist!, Please login!", 401))
     }
+
+
+    // if customer accont is inactive it is exicutes
+    if (!currentCustomer.isActive) {
+        return next(
+            new AppError("Your account is inactive.", 403)
+        );
+        }
 
     // if customer accont is block it is exicutes
     if (currentCustomer.status === "blocked") {
@@ -51,7 +59,7 @@ export const restrictTo = (...roles) => {
     next() // imp for moving next operation
     }
 
-   
+
 
 }
 
