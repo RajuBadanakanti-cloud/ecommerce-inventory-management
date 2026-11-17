@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axiosInstance from '../../api/axiosInstance';
-import { Layers, AlertTriangle, RefreshCw, Plus, Minus, History, X, ShieldCheck } from 'lucide-react';
+import { Layers, AlertTriangle, RefreshCw, Plus, Minus, History, X, ShieldCheck, Loader2 } from 'lucide-react';
 
 export default function AdminInventory() {
   const [items, setItems] = useState([]);
@@ -58,13 +58,22 @@ export default function AdminInventory() {
 
   const displayedItems = filterLowStock ? items.filter((i) => i.status === 'low_stock' || i.status === 'out_of_stock') : items;
 
+  if (loading) {
+    return (
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-center py-32 text-slate-400">
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600 mb-4" />
+        <p className="text-sm font-medium">Loading real-time inventory and audit logs...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
       {/* Header section */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-6 sm:mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2.5">
-            <Layers className="text-blue-600 shrink-0" size={28} /> Inventory & Audit Trail
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-900 flex items-center gap-2.5">
+            <Layers className="text-blue-600 shrink-0" size={26} /> Inventory & Audit Trail
           </h1>
           <p className="mt-1 text-xs sm:text-sm text-slate-500">Manage stock levels with mandatory enterprise audit logs</p>
         </div>
@@ -72,7 +81,7 @@ export default function AdminInventory() {
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           <button
             onClick={() => setFilterLowStock(!filterLowStock)}
-            className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-bold transition-all shadow-sm ${
+            className={`inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2.5 text-xs font-bold transition-all shadow-sm ${
               filterLowStock
                 ? 'bg-rose-600 text-white hover:bg-rose-500 shadow-rose-600/20'
                 : 'border border-slate-300 bg-white text-slate-700 hover:bg-slate-50'
@@ -83,7 +92,7 @@ export default function AdminInventory() {
           </button>
           <button
             onClick={fetchInventory}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all shadow-sm"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all shadow-sm"
             type="button"
           >
             <RefreshCw size={14} /> Refresh
@@ -92,26 +101,26 @@ export default function AdminInventory() {
       </div>
 
       {/* Inventory Section: Responsive Card View for Mobile & Table View for Desktop */}
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-sm mb-10">
-        <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-4">Current Product Stock Overview</h3>
+      <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-sm mb-8 sm:mb-10">
+        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 mb-4">Current Product Stock Overview</h3>
 
         {/* Mobile & Tablet Card View (< 768px) */}
-        <div className="grid grid-cols-1 gap-4 md:hidden">
+        <div className="grid grid-cols-1 gap-3.5 md:hidden">
           {displayedItems.map((item) => (
-            <div key={item._id} className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 space-y-3">
+            <div key={item._id} className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 space-y-3 shadow-xs">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
                   <img
                     src={item.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=80'}
                     alt=""
-                    className="h-12 w-12 rounded-xl object-cover border border-slate-200 shrink-0"
+                    className="h-12 w-12 rounded-xl object-cover border border-slate-200 shrink-0 shadow-xs"
                   />
                   <div className="min-w-0">
-                    <h4 className="font-bold text-slate-900 text-sm truncate">{item.name}</h4>
-                    <code className="rounded bg-slate-200 px-1.5 py-0.5 font-mono text-[10px] font-bold text-slate-700">{item.sku}</code>
+                    <h4 className="font-bold text-slate-900 text-xs sm:text-sm truncate mb-0.5">{item.name}</h4>
+                    <code className="rounded bg-slate-200/80 px-1.5 py-0.5 font-mono text-[10px] font-bold text-slate-700">{item.sku}</code>
                   </div>
                 </div>
-                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold shrink-0 ${
+                <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold shrink-0 ${
                   item.status === 'in_stock' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
                   item.status === 'low_stock' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
                   'bg-rose-50 text-rose-700 border border-rose-200'
@@ -120,7 +129,7 @@ export default function AdminInventory() {
                 </span>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-200/60 text-xs">
+              <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-200/60 text-xs">
                 <div>
                   <span className="block text-slate-400 font-medium text-[10px] uppercase">Category</span>
                   <span className="font-semibold text-slate-700 truncate block">{item.category}</span>
@@ -135,13 +144,13 @@ export default function AdminInventory() {
                 </div>
               </div>
 
-              <div className="pt-2 flex justify-end">
+              <div className="pt-2">
                 <button
                   onClick={() => setSelectedProduct(item)}
-                  className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-4 py-2 text-xs font-semibold text-white shadow-md shadow-blue-600/20 hover:bg-blue-500 transition-all"
+                  className="w-full inline-flex items-center justify-center gap-1.5 rounded-xl bg-blue-600 px-4 py-3 text-xs font-semibold text-white shadow-md shadow-blue-600/20 hover:bg-blue-500 transition-all active:scale-[0.98]"
                   type="button"
                 >
-                  Adjust Stock
+                  Adjust Stock Level
                 </button>
               </div>
             </div>
@@ -216,7 +225,7 @@ export default function AdminInventory() {
 
       {/* Movement Audit History */}
       <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-sm overflow-hidden">
-        <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
+        <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 mb-5 flex items-center gap-2">
           <History size={18} className="text-blue-600 shrink-0" /> Recent Stock Movement Logs (Audit Trail)
         </h3>
 
@@ -225,13 +234,13 @@ export default function AdminInventory() {
           {movements.map((m) => (
             <div key={m._id} className="rounded-xl border border-slate-200 bg-slate-50/60 p-3.5 space-y-2 text-xs">
               <div className="flex items-center justify-between">
-                <strong className="font-bold text-slate-900">{m.product?.name || 'Product'}</strong>
-                <span className={`inline-flex items-center gap-0.5 font-extrabold ${m.changeQuantity > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                <strong className="font-bold text-slate-900 truncate pr-2">{m.product?.name || 'Product'}</strong>
+                <span className={`inline-flex items-center gap-0.5 font-extrabold shrink-0 ${m.changeQuantity > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
                   {m.changeQuantity > 0 ? <Plus size={12} /> : <Minus size={12} />}
                   {m.changeQuantity > 0 ? `+${m.changeQuantity}` : m.changeQuantity}
                 </span>
               </div>
-              <div className="flex justify-between text-slate-600 font-medium">
+              <div className="flex justify-between items-center text-slate-600 font-medium">
                 <span>Stock Shift: <code className="font-mono text-slate-800">{m.previousStock} → {m.newStock}</code></span>
                 <span className="rounded bg-blue-50 px-2 py-0.5 font-bold text-blue-700 border border-blue-200 text-[10px]">{m.movementType}</span>
               </div>
@@ -292,10 +301,10 @@ export default function AdminInventory() {
       {/* Adjustment Modal */}
       {selectedProduct && (
         <div className="fixed inset-0 bg-slate-950/65 backdrop-blur-sm flex items-center justify-center z-9999 p-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 w-full max-w-120 shadow-2xl relative">
+          <div className="rounded-3xl border border-slate-200 bg-white p-6 sm:p-8 w-full max-w-md shadow-2xl relative">
             <button
               onClick={() => setSelectedProduct(null)}
-              className="absolute right-4 top-4 p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition-colors"
+              className="absolute right-4 top-4 p-2 text-slate-400 hover:text-slate-600 rounded-xl hover:bg-slate-100 transition-colors"
               type="button"
             >
               <X size={20} />
@@ -340,14 +349,14 @@ export default function AdminInventory() {
                 <button
                   type="button"
                   onClick={() => setSelectedProduct(null)}
-                  className="px-4 sm:px-5 py-2.5 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all"
+                  className="px-4 sm:px-5 py-3 rounded-xl border border-slate-300 bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-all"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={adjusting}
-                  className="inline-flex items-center gap-1.5 px-5 sm:px-6 py-2.5 rounded-xl bg-blue-600 text-xs font-semibold text-white shadow-md shadow-blue-600/20 hover:bg-blue-500 transition-all disabled:opacity-60"
+                  className="inline-flex items-center justify-center gap-1.5 px-5 sm:px-6 py-3 rounded-xl bg-blue-600 text-xs font-semibold text-white shadow-md shadow-blue-600/20 hover:bg-blue-500 transition-all disabled:opacity-60"
                 >
                   <ShieldCheck size={16} /> {adjusting ? 'Saving...' : 'Confirm Adjustment'}
                 </button>

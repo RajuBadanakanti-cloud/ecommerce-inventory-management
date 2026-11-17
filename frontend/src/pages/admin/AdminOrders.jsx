@@ -9,7 +9,9 @@ import {
   XCircle,
   ShieldCheck,
   AlertCircle,
-  X
+  X,
+  Loader2,
+  // Loader
 } from 'lucide-react';
 
 export default function AdminOrders() {
@@ -188,7 +190,7 @@ export default function AdminOrders() {
         {/* LOADING STATE */}
         {loading && (
           <div className="py-16 text-center">
-            <RefreshCw
+            <Loader2
               size={28}
               className="mx-auto animate-spin text-blue-600"
             />
@@ -266,7 +268,7 @@ export default function AdminOrders() {
                     </select>
 
                     {updatingOrderId === o._id && (
-                      <RefreshCw size={14} className="animate-spin text-blue-600" />
+                      <Loader2 size={14} className="animate-spin text-blue-600" />
                     )}
                   </div>
                 </div>
@@ -373,7 +375,7 @@ export default function AdminOrders() {
                         </select>
 
                         {updatingOrderId === o._id && (
-                          <RefreshCw size={14} className="animate-spin text-blue-600" />
+                          <Loader2 size={14} className="animate-spin text-blue-600" />
                         )}
                       </div>
                     </td>

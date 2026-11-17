@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { useParams, useLocation, Link, useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/axiosInstance';
@@ -11,7 +10,6 @@ import {
   ArrowRight,
   Package,
   CreditCard,
-  Smartphone,
   Lock,
   RefreshCw,
   Receipt,
@@ -177,7 +175,7 @@ export default function MockPaymentPage() {
   const isSuccessful =
     result?.success === true || isAlreadyPaid;
 
-  const isFailed = result && !isSuccessful;
+  // const isFailed = result && !isSuccessful;
 
   // LOADING SCREEN >>>>>>>>>>>>>>>
   if (loadingOrder) {
@@ -430,7 +428,7 @@ export default function MockPaymentPage() {
 
                         <button
                           type="button"
-                          onClick={() => navigate('/shop')}
+                          onClick={() => navigate('/products')}
                           className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-bold text-slate-700 transition hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
                         >
                           <ShoppingBag size={18} />
@@ -502,58 +500,28 @@ export default function MockPaymentPage() {
                       Available Payment Options
                     </h3>
 
-                    {/* CARD PAYMENT */}
-
+                    {/* PAYMENT ACTION */}
                     <button
                       type="button"
                       onClick={() => handleSimulate('success')}
                       disabled={processing}
                       className="group mb-3 flex w-full items-center gap-4 rounded-2xl border border-slate-200 p-4 text-left transition hover:border-blue-400 hover:bg-blue-50/40 disabled:cursor-not-allowed disabled:opacity-60 sm:p-5"
                     >
-
                       <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
                         <CreditCard size={24} />
                       </div>
 
                       <div className="min-w-0 flex-1">
                         <h4 className="text-sm font-extrabold text-slate-900">
-                          Credit / Debit Card
+                          Simulate {order.paymentMethod === 'upi' ? 'UPI' : 'Card'} Payment
                         </h4>
 
                         <p className="mt-1 text-xs leading-5 text-slate-500">
-                          Simulate a successful card payment
+                          Confirm the payment using your selected checkout method
                         </p>
                       </div>
 
                       <ArrowRight className="shrink-0 text-slate-400 transition group-hover:translate-x-1 group-hover:text-blue-600" size={19} />
-
-                    </button>
-
-                    {/* UPI PAYMENT */}
-
-                    <button
-                      type="button"
-                      onClick={() => handleSimulate('success')}
-                      disabled={processing}
-                      className="group mb-3 flex w-full items-center gap-4 rounded-2xl border border-slate-200 p-4 text-left transition hover:border-blue-400 hover:bg-blue-50/40 disabled:cursor-not-allowed disabled:opacity-60 sm:p-5"
-                    >
-
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
-                        <Smartphone size={24} />
-                      </div>
-
-                      <div className="min-w-0 flex-1">
-                        <h4 className="text-sm font-extrabold text-slate-900">
-                          UPI / QR Payment
-                        </h4>
-
-                        <p className="mt-1 text-xs leading-5 text-slate-500">
-                          Simulate a UPI payment
-                        </p>
-                      </div>
-
-                      <ArrowRight className="shrink-0 text-slate-400 transition group-hover:translate-x-1 group-hover:text-blue-600" size={19} />
-
                     </button>
 
                     {/* FAILED PAYMENT */}
@@ -678,7 +646,6 @@ export default function MockPaymentPage() {
           <aside className="lg:col-span-5">
             <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
               {/* SUMMARY HEADER */}
-
               <div className="border-b border-slate-100 p-5 sm:p-6">
                 <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-700">

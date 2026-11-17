@@ -127,6 +127,7 @@ export default function CheckoutPage() {
         country: address.country.trim()
       };
 
+      console.log("Payment Method: ", paymentMethod)
       const response = await axiosInstance.post('/orders', {
         shippingAddress: formattedAddress,
         couponCode: couponCode || undefined,
@@ -486,7 +487,7 @@ export default function CheckoutPage() {
               </span>
             </div>
           </div>
-
+           {/* Coupons */}     
           <div className="border-t border-slate-200/80 pt-4 mb-5">
             {couponCode && (
               <div className="mb-3 rounded-xl border border-green-400 bg-green-200 px-3.5 py-2.5 text-xs font-semibold text-green-900 flex items-center gap-2 shadow-sm">

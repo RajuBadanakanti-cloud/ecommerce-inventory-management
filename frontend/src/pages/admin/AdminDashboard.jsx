@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate} from 'react-router-dom';
 import { DollarSign, ShoppingCart, Users, Package, AlertTriangle, ArrowRight, TrendingUp } from 'lucide-react';
 import axiosInstance from '../../api/axiosInstance';
 
 export default function AdminDashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigation = useNavigate()
 
   // dashboard >>>
   useEffect(() => {
@@ -34,24 +35,28 @@ export default function AdminDashboard() {
 
   if (!data) {
     return (
-      <div className="mx-auto max-w-7xl px-5 py-32 text-center text-rose-600 font-semibold">
-        Failed to load analytics
+      <div className="mx-auto max-w-7xl px-5 py-32 text-center text-red-900 font-semibold flex flex-col justify-center items-center">
+       <p className='text-base md:text-xl'>Failed to load analytics</p>
+        <button 
+        type='button'
+        className='px-4 py-2 text-red-50 bg-red-900 border-red-200 shadow border rounded mt-4 md:mt-5' 
+        onClick={() => navigation("/", {replace:true})}>Try again later</button>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Business Analytics & Overview</h1>
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Business Analytics & Overview</h1>
         <p className="mt-1 text-xs sm:text-sm text-slate-500">Overview of your store's performance</p>
       </div>
 
       {/* Low Stock Warning Banner if any */}
       {data.lowStockCount > 0 && (
-        <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-amber-300 bg-amber-50 p-4 sm:p-5 text-amber-900 shadow-sm">
+        <div className="mb-6 sm:mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-amber-900 shadow-sm">
           <div className="flex items-center gap-3">
-            <AlertTriangle className="text-amber-600 shrink-0" size={22} />
+            <AlertTriangle className="text-amber-600 shrink-0" size={20} />
             <strong className="text-xs sm:text-sm md:text-base font-bold">{data.lowStockCount} products are running low on inventory!</strong>
           </div>
           <Link
@@ -64,57 +69,57 @@ export default function AdminDashboard() {
       )}
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8 sm:mb-10">
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-3">
-            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider">TOTAL REVENUE</span>
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
-              <DollarSign size={18} />
+      <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-10">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">TOTAL REVENUE</span>
+            <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+              <DollarSign size={16} />
             </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-950 truncate">
+          <div className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-950 truncate">
             ₹{data.totalRevenue?.toLocaleString('en-IN') || 0}
           </div>
-          <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">Paid orders revenue</div>
+          <div className="text-[10px] sm:text-xs text-slate-400 mt-1 font-medium">Paid orders revenue</div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-3">
-            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider">TOTAL ORDERS</span>
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
-              <ShoppingCart size={18} />
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">TOTAL ORDERS</span>
+            <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              <ShoppingCart size={16} />
             </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-950">
+          <div className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-950">
             {data.totalOrders}
           </div>
-          <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">{data.paidOrders} confirmed & paid</div>
+          <div className="text-[10px] sm:text-xs text-slate-400 mt-1 font-medium">{data.paidOrders} confirmed & paid</div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-3">
-            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider">ACTIVE PRODUCTS</span>
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
-              <Package size={18} />
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">ACTIVE PRODUCTS</span>
+            <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+              <Package size={16} />
             </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-950">
+          <div className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-950">
             {data.totalProducts}
           </div>
-          <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">Available in catalog</div>
+          <div className="text-[10px] sm:text-xs text-slate-400 mt-1 font-medium">Available in catalog</div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 mb-3">
-            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider">TOTAL CUSTOMERS</span>
-            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
-              <Users size={18} />
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 mb-2 sm:mb-3">
+            <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">TOTAL CUSTOMERS</span>
+            <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
+              <Users size={16} />
             </div>
           </div>
-          <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-950">
+          <div className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-slate-950">
             {data.totalCustomers}
           </div>
-          <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">Registered buyers</div>
+          <div className="text-[10px] sm:text-xs text-slate-400 mt-1 font-medium">Registered buyers</div>
         </div>
       </div>
 
@@ -122,9 +127,9 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
 
         {/* Recent Orders */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 lg:p-8 shadow-sm">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4 sm:mb-5">
-            <h3 className="text-base sm:text-lg font-bold text-slate-900">Recent Customer Orders</h3>
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 lg:p-8 shadow-sm">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3 sm:pb-4 mb-4">
+            <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900">Recent Customer Orders</h3>
             <Link to="/admin/orders" className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">
               View All →
             </Link>
@@ -144,9 +149,9 @@ export default function AdminDashboard() {
                     {o.orderStatus}
                   </span>
                 </div>
-                <div className="flex justify-between text-slate-600 font-medium">
-                  <span>Customer: <strong className="text-slate-900">{o.user?.name || 'Customer'}</strong></span>
-                  <strong className="text-slate-950">₹{o.totalAmount?.toLocaleString('en-IN')}</strong>
+                <div className="flex justify-between items-center text-slate-600 font-medium">
+                  <span className="truncate pr-2">Customer: <strong className="text-slate-900">{o.user?.name || 'Customer'}</strong></span>
+                  <strong className="text-slate-950 shrink-0">₹{o.totalAmount?.toLocaleString('en-IN')}</strong>
                 </div>
               </div>
             ))}
@@ -186,16 +191,16 @@ export default function AdminDashboard() {
         </div>
 
         {/* Top Products */}
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 lg:p-8 shadow-sm">
-          <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-4 sm:mb-5 flex items-center gap-2">
-            <TrendingUp size={18} className="text-blue-600" /> Top Selling Items
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 sm:p-6 lg:p-8 shadow-sm">
+          <h3 className="text-sm sm:text-base lg:text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
+            <TrendingUp size={18} className="text-blue-600 shrink-0" /> Top Selling Items
           </h3>
           {data.topProducts?.length === 0 ? (
-            <p className="text-sm text-slate-500 py-8 text-center">Place demo orders to see real-time sales volume.</p>
+            <p className="text-xs sm:text-sm text-slate-500 py-8 text-center">Place demo orders to see real-time sales volume.</p>
           ) : (
-            <div className="flex flex-col gap-3.5">
+            <div className="flex flex-col gap-3">
               {data.topProducts.map((p, idx) => (
-                <div key={idx} className="flex items-center justify-between text-xs sm:text-sm border-b border-slate-100 pb-3.5 last:border-none last:pb-0">
+                <div key={idx} className="flex items-center justify-between text-xs sm:text-sm border-b border-slate-100 pb-3 last:border-none last:pb-0">
                   <div className="pr-3 min-w-0">
                     <strong className="font-bold text-slate-900 block mb-0.5 truncate">{p.name}</strong>
                     <div className="text-[11px] sm:text-xs text-slate-400">{p.totalSold} units sold</div>
