@@ -11,6 +11,10 @@ import AppError from "../utils/AppError.js";
 export const createOrder = catchAsync(async (req, res, next) => {
     const { shippingAddress, paymentMethod, couponCode } = req.body;
 
+    //console.log("CREATE ORDER API HIT");
+   // console.log("Request Body:", req.body);
+    // console.log("Payment Method:", req.body.paymentMethod);
+
     // Validate the shipping address
     const requiredAddressFields = [
         "fullName",
@@ -31,7 +35,16 @@ export const createOrder = catchAsync(async (req, res, next) => {
     }
 
     // Validate the selected payment method
-    const allowedPaymentMethods = ["mock_card", "mock_upi"];
+    const allowedPaymentMethods = [
+        "card",
+        "upi",
+       // "netbanking",
+        //"wallet",
+       // "emi",
+       // "paylater",
+        "offline",
+       // "unknown",
+      ];
 
     if (!allowedPaymentMethods.includes(paymentMethod)) {
         return next(new AppError("Invalid payment method", 400));

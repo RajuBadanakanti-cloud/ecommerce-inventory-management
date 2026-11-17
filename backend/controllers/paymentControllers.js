@@ -131,12 +131,14 @@ export const simulatePayment = catchAsync(async (req, res, next) => {
       }
 
       //  Determine payment method
-      const methodMap = {
+
+      /* 
+       const methodMap = {
         mock_card: "card",
         mock_upi: "upi",
-      };
+      } */
 
-      const method = methodMap[order.paymentMethod] || "unknown";
+      const method = order.paymentMethod || "unknown";
 
       //  Calculate payment attempt number
       const previousAttempts = await Payment.countDocuments({

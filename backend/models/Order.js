@@ -163,7 +163,16 @@ const orderSchema = new mongoose.Schema(
 
     paymentMethod: {
       type: String,
-      enum: ["mock_card", "mock_upi"],
+      enum: [
+        "card",
+        "upi",
+        "netbanking",
+        "wallet",
+        "emi",
+        "paylater",
+        "offline",
+        "unknown",
+      ],
       required: true,
     },
 
