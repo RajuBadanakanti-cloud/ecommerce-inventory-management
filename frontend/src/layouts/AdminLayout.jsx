@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import { useState } from 'react';
 import { Outlet, Navigate, Link } from 'react-router-dom';
 import AdminSidebar from '../components/layout/AdminSidebar';
 import { useAuth } from '../context/AuthContext';
@@ -9,57 +10,78 @@ export default function AdminLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (loading) {
-    return <div style={{ padding: '60px', textAlign: 'center' }}>Authenticating admin access...</div>;
+    return (
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-center py-32 text-slate-400">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent mb-4" />
+        <p className="text-sm font-medium">Authenticating admin access...</p>
+      </div>
+    );
   }
 
   if (!user || !isAdmin) {
-    alert('Access Denied: Administrator role required');
     return <Navigate to="/login" replace />;
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#F8FAFC', position: 'relative' }}>
-      
-      {/* Sidebar with mobile toggle support */}
-      <div className={`admin-sidebar-wrapper ${sidebarOpen ? 'open' : ''}`}>
+    <div className="min-h-screen bg-slate-50">
+
+      {/* Sidebar Wrapper */}
+      <div
+        className={`fixed inset-y-0 left-0 z-50 w-64 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+          sidebarOpen
+            ? 'translate-x-0 shadow-2xl'
+            : '-translate-x-full lg:translate-x-0'
+        }`}
+      >
         <AdminSidebar onNavigate={() => setSidebarOpen(false)} />
       </div>
 
-      {/* Backdrop overlay for mobile */}
+      {/* Mobile Backdrop */}
       {sidebarOpen && (
         <div
           onClick={() => setSidebarOpen(false)}
-          className="admin-backdrop"
+          className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm lg:hidden"
         />
       )}
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
-        <header style={{ height: '64px', backgroundColor: '#fff', borderBottom: '1px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', gap: '12px' }}>
-          
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+      {/* Main Content */}
+      <div className="min-h-screen lg:ml-64">
+
+        {/* Header */}
+        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-slate-200 bg-white/80 backdrop-blur-md px-5 sm:px-8">
+
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="admin-mobile-toggle"
-              style={{ padding: '6px', color: 'var(--text-main)', display: 'none' }}
+              className="inline-flex lg:hidden items-center justify-center rounded-xl p-2 text-slate-700 hover:bg-slate-100 transition-colors focus:outline-none"
               aria-label="Toggle Sidebar"
+              type="button"
             >
               {sidebarOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
-            <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-              Admin: <strong>{user?.name}</strong>
+
+            <div className="text-xs sm:text-sm text-slate-500 font-medium">
+              Admin: <strong className="font-bold text-slate-900">
+                {user?.name}
+              </strong>
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <Link to="/" className="btn btn-outline btn-sm" style={{ fontSize: '12px' }}>
+          <div className="flex items-center gap-3">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 shadow-sm hover:bg-slate-50 transition-all"
+            >
               <ArrowLeft size={14} /> Storefront
             </Link>
           </div>
         </header>
 
-        <main style={{ padding: '24px', flex: 1, overflowY: 'auto' }}>
+        {/* Dashboard Pages */}
+        <main className="min-h-[calc(100vh-4rem)] p-5 sm:p-8">
           <Outlet />
         </main>
+
       </div>
     </div>
   );

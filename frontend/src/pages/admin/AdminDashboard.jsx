@@ -1,19 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { api } from '../../services/api';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { DollarSign, ShoppingCart, Users, Package, AlertTriangle, ArrowRight } from 'lucide-react';
+import { DollarSign, ShoppingCart, Users, Package, AlertTriangle, ArrowRight, TrendingUp } from 'lucide-react';
+import axiosInstance from '../../api/axiosInstance';
 
 export default function AdminDashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // dashboard >>>
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const res = await api.get('/analytics/dashboard');
-        setData(res.data);
+        const response = await axiosInstance.get('/analytics/dashboard');
+        const data = response.data;
+        setData(data);
       } catch (err) {
-        console.error(err);
+        console.error(err.response?.data?.message || "Admin Dashboard analytics failed");
       } finally {
         setLoading(false);
       }
@@ -21,104 +23,158 @@ export default function AdminDashboard() {
     fetchAnalytics();
   }, []);
 
-  if (loading) return <div>Loading real-time database analytics...</div>;
-  if (!data) return <div>Failed to load analytics</div>;
+  if (loading) {
+    return (
+      <div className="mx-auto flex max-w-7xl flex-col items-center justify-center py-32 text-slate-400">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent mb-4" />
+        <p className="text-sm font-medium">Loading real-time database analytics...</p>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return (
+      <div className="mx-auto max-w-7xl px-5 py-32 text-center text-rose-600 font-semibold">
+        Failed to load analytics
+      </div>
+    );
+  }
 
   return (
-    <div>
-      <div style={{ marginBottom: '28px' }}>
-        <h1 style={{ fontSize: '26px', fontWeight: '800', color: 'var(--primary)' }}>Business Analytics & Overview</h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Real-time statistics derived directly from MongoDB records</p>
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mb-8">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900">Business Analytics & Overview</h1>
+        <p className="mt-1 text-xs sm:text-sm text-slate-500">Overview of your store's performance</p>
       </div>
 
       {/* Low Stock Warning Banner if any */}
       {data.lowStockCount > 0 && (
-        <div style={{ backgroundColor: '#FFFBEB', border: '1px solid #FCD34D', color: '#B45309', padding: '16px 20px', borderRadius: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <AlertTriangle size={20} />
-            <strong>{data.lowStockCount} products are running low on inventory!</strong>
+        <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-amber-300 bg-amber-50 p-4 sm:p-5 text-amber-900 shadow-sm">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="text-amber-600 shrink-0" size={22} />
+            <strong className="text-xs sm:text-sm md:text-base font-bold">{data.lowStockCount} products are running low on inventory!</strong>
           </div>
-          <Link to="/admin/inventory" className="btn btn-sm" style={{ backgroundColor: '#F59E0B', color: '#fff' }}>
-            Review Stock Now →
+          <Link
+            to="/admin/inventory"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-amber-500 px-3.5 py-2 text-xs font-bold text-white shadow-md shadow-amber-500/20 hover:bg-amber-600 transition-all self-end sm:self-auto"
+          >
+            Review Stock Now <ArrowRight size={14} />
           </Link>
         </div>
       )}
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '20px', marginBottom: '32px' }}>
-        <div className="card" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)', marginBottom: '10px' }}>
-            <span style={{ fontSize: '13px', fontWeight: '600' }}>TOTAL REVENUE</span>
-            <DollarSign size={20} color="var(--success)" />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8 sm:mb-10">
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 mb-3">
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider">TOTAL REVENUE</span>
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600">
+              <DollarSign size={18} />
+            </div>
           </div>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--primary)' }}>
+          <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-950 truncate">
             ₹{data.totalRevenue?.toLocaleString('en-IN') || 0}
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Paid orders revenue</div>
+          <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">Paid orders revenue</div>
         </div>
 
-        <div className="card" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)', marginBottom: '10px' }}>
-            <span style={{ fontSize: '13px', fontWeight: '600' }}>TOTAL ORDERS</span>
-            <ShoppingCart size={20} color="var(--secondary)" />
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 mb-3">
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider">TOTAL ORDERS</span>
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
+              <ShoppingCart size={18} />
+            </div>
           </div>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--primary)' }}>
+          <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-950">
             {data.totalOrders}
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>{data.paidOrders} confirmed & paid</div>
+          <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">{data.paidOrders} confirmed & paid</div>
         </div>
 
-        <div className="card" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)', marginBottom: '10px' }}>
-            <span style={{ fontSize: '13px', fontWeight: '600' }}>ACTIVE PRODUCTS</span>
-            <Package size={20} color="var(--accent)" />
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 mb-3">
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider">ACTIVE PRODUCTS</span>
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
+              <Package size={18} />
+            </div>
           </div>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--primary)' }}>
+          <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-950">
             {data.totalProducts}
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>In 5 active categories</div>
+          <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">Available in catalog</div>
         </div>
 
-        <div className="card" style={{ padding: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--text-secondary)', marginBottom: '10px' }}>
-            <span style={{ fontSize: '13px', fontWeight: '600' }}>TOTAL CUSTOMERS</span>
-            <Users size={20} color="#8B5CF6" />
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 mb-3">
+            <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider">TOTAL CUSTOMERS</span>
+            <div className="flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-purple-50 text-purple-600">
+              <Users size={18} />
+            </div>
           </div>
-          <div style={{ fontSize: '28px', fontWeight: '800', color: 'var(--primary)' }}>
+          <div className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-950">
             {data.totalCustomers}
           </div>
-          <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>Registered buyers</div>
+          <div className="text-[11px] sm:text-xs text-slate-400 mt-1 font-medium">Registered buyers</div>
         </div>
       </div>
 
       {/* Recent Orders & Top Sellers */}
-      <div className="responsive-dashboard-split">
-        
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
+
         {/* Recent Orders */}
-        <div className="card" style={{ padding: '24px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: '700' }}>Recent Customer Orders</h3>
-            <Link to="/admin/orders" style={{ fontSize: '13px', color: 'var(--secondary)', fontWeight: '600' }}>View All →</Link>
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 lg:p-8 shadow-sm">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4 sm:mb-5">
+            <h3 className="text-base sm:text-lg font-bold text-slate-900">Recent Customer Orders</h3>
+            <Link to="/admin/orders" className="text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors">
+              View All →
+            </Link>
           </div>
 
-          <div className="table-container">
-            <table className="table">
+          {/* Mobile Card Stack for Recent Orders (< 768px) */}
+          <div className="grid grid-cols-1 gap-3 md:hidden">
+            {data.recentOrders.map((o) => (
+              <div key={o._id} className="rounded-xl border border-slate-200 bg-slate-50/60 p-3.5 space-y-2 text-xs">
+                <div className="flex items-center justify-between">
+                  <strong className="font-bold text-slate-900">{o.orderNumber}</strong>
+                  <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                    o.orderStatus === 'confirmed' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                    o.orderStatus === 'delivered' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                    'bg-amber-50 text-amber-700 border border-amber-200'
+                  }`}>
+                    {o.orderStatus}
+                  </span>
+                </div>
+                <div className="flex justify-between text-slate-600 font-medium">
+                  <span>Customer: <strong className="text-slate-900">{o.user?.name || 'Customer'}</strong></span>
+                  <strong className="text-slate-950">₹{o.totalAmount?.toLocaleString('en-IN')}</strong>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View (>= 768px) */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full text-left border-collapse">
               <thead>
-                <tr>
-                  <th>Order No</th>
-                  <th>Customer</th>
-                  <th>Amount</th>
-                  <th>Status</th>
+                <tr className="border-b border-slate-100 text-xs font-bold uppercase tracking-wider text-slate-400">
+                  <th className="pb-3 font-bold">Order No</th>
+                  <th className="pb-3 font-bold">Customer</th>
+                  <th className="pb-3 font-bold">Amount</th>
+                  <th className="pb-3 font-bold text-right">Status</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody className="divide-y divide-slate-100 text-sm">
                 {data.recentOrders.map((o) => (
-                  <tr key={o._id}>
-                    <td><strong>{o.orderNumber}</strong></td>
-                    <td>{o.user?.name || 'Customer'}</td>
-                    <td>₹{o.totalAmount?.toLocaleString('en-IN')}</td>
-                    <td>
-                      <span className={`badge ${o.orderStatus === 'confirmed' ? 'badge-info' : o.orderStatus === 'delivered' ? 'badge-success' : 'badge-warning'}`}>
+                  <tr key={o._id} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="py-3.5"><strong className="font-bold text-slate-900">{o.orderNumber}</strong></td>
+                    <td className="py-3.5 font-medium text-slate-700">{o.user?.name || 'Customer'}</td>
+                    <td className="py-3.5 font-medium text-slate-900">₹{o.totalAmount?.toLocaleString('en-IN')}</td>
+                    <td className="py-3.5 text-right">
+                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${
+                        o.orderStatus === 'confirmed' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                        o.orderStatus === 'delivered' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                        'bg-amber-50 text-amber-700 border border-amber-200'
+                      }`}>
                         {o.orderStatus}
                       </span>
                     </td>
@@ -130,19 +186,21 @@ export default function AdminDashboard() {
         </div>
 
         {/* Top Products */}
-        <div className="card" style={{ padding: '24px' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: '700', marginBottom: '18px' }}>Top Selling Items</h3>
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-5 sm:p-6 lg:p-8 shadow-sm">
+          <h3 className="text-base sm:text-lg font-bold text-slate-900 mb-4 sm:mb-5 flex items-center gap-2">
+            <TrendingUp size={18} className="text-blue-600" /> Top Selling Items
+          </h3>
           {data.topProducts?.length === 0 ? (
-            <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Place demo orders to see real-time sales volume.</p>
+            <p className="text-sm text-slate-500 py-8 text-center">Place demo orders to see real-time sales volume.</p>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+            <div className="flex flex-col gap-3.5">
               {data.topProducts.map((p, idx) => (
-                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', borderBottom: '1px solid var(--border)', paddingBottom: '8px' }}>
-                  <div>
-                    <strong>{p.name}</strong>
-                    <div style={{ color: 'var(--text-muted)' }}>{p.totalSold} units sold</div>
+                <div key={idx} className="flex items-center justify-between text-xs sm:text-sm border-b border-slate-100 pb-3.5 last:border-none last:pb-0">
+                  <div className="pr-3 min-w-0">
+                    <strong className="font-bold text-slate-900 block mb-0.5 truncate">{p.name}</strong>
+                    <div className="text-[11px] sm:text-xs text-slate-400">{p.totalSold} units sold</div>
                   </div>
-                  <strong style={{ color: 'var(--primary)' }}>₹{p.totalRevenue?.toLocaleString('en-IN')}</strong>
+                  <strong className="font-extrabold text-blue-600 whitespace-nowrap">₹{p.totalRevenue?.toLocaleString('en-IN')}</strong>
                 </div>
               ))}
             </div>

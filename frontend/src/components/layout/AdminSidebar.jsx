@@ -1,4 +1,3 @@
-import React from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import {
   LayoutDashboard,
@@ -6,7 +5,6 @@ import {
   Layers,
   ShoppingBag,
   Ticket,
-  MessageSquare,
   ArrowLeft,
   LogOut,
   ShieldAlert
@@ -29,20 +27,18 @@ export default function AdminSidebar({ onNavigate }) {
   };
 
   return (
-    <aside style={{ width: '260px', backgroundColor: 'var(--primary)', color: '#fff', minHeight: '100vh', display: 'flex', flexDirection: 'column', flexShrink: 0 }}>
-      {/* Brand */}
-      <div style={{ padding: '24px 20px', borderBottom: '1px solid #1E293B', display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <div style={{ backgroundColor: 'var(--secondary)', color: '#fff', padding: '6px', borderRadius: '8px' }}>
+      <aside className="fixed top-0 left-0 z-40 h-screen w-65 overflow-y-auto bg-slate-950 text-white flex flex-col shrink-0 border-r border-slate-800">      <div className="p-6 border-b border-slate-800 flex items-center gap-2.5">
+        <div className="bg-blue-600 text-white p-1.5 rounded-lg shadow-md shadow-blue-600/20">
           <ShieldAlert size={20} />
         </div>
         <div>
-          <div style={{ fontSize: '16px', fontWeight: '800' }}>ShopSphere</div>
-          <div style={{ fontSize: '11px', color: '#38BDF8', fontWeight: '600' }}>ADMIN CONTROL</div>
+          <div className="text-base font-extrabold tracking-tight">ShopSphere</div>
+          <div className="text-[11px] text-blue-400 font-bold tracking-wider">ADMIN CONTROL</div>
         </div>
       </div>
 
       {/* Nav Menu */}
-      <nav style={{ padding: '20px 12px', display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 }}>
+      <nav className="p-3 flex flex-col gap-1 flex-1">
         {links.map((link) => {
           const Icon = link.icon;
           return (
@@ -51,18 +47,13 @@ export default function AdminSidebar({ onNavigate }) {
               to={link.to}
               end={link.end}
               onClick={handleLinkClick}
-              style={({ isActive }) => ({
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                padding: '10px 14px',
-                borderRadius: '8px',
-                fontSize: '14px',
-                fontWeight: '500',
-                color: isActive ? '#fff' : '#94A3B8',
-                backgroundColor: isActive ? 'var(--secondary)' : 'transparent',
-                transition: 'all 0.2s ease'
-              })}
+              className={({ isActive }) =>
+                `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+                  isActive
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/25 font-semibold'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-900'
+                }`
+              }
             >
               <Icon size={18} />
               {link.label}
@@ -72,17 +63,18 @@ export default function AdminSidebar({ onNavigate }) {
       </nav>
 
       {/* Bottom Switcher */}
-      <div style={{ padding: '20px 16px', borderTop: '1px solid #1E293B' }}>
+      <div className="p-4 border-t border-slate-800 space-y-1">
         <Link
           to="/"
           onClick={handleLinkClick}
-          style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#94A3B8', fontSize: '13px', padding: '8px 10px', borderRadius: '6px', marginBottom: '8px' }}
+          className="flex items-center gap-2.5 text-slate-400 hover:text-white text-xs font-medium px-2.5 py-2 rounded-lg hover:bg-slate-900 transition-colors"
         >
           <ArrowLeft size={16} /> Back to Storefront
         </Link>
         <button
           onClick={() => { logout(); handleLinkClick(); }}
-          style={{ width: '100%', display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--error)', fontSize: '13px', padding: '8px 10px', borderRadius: '6px', textAlign: 'left' }}
+          className="w-full flex items-center gap-2.5 text-red-400 hover:text-red-300 text-xs font-medium px-2.5 py-2 rounded-lg hover:bg-red-950/30 transition-colors text-left"
+          type="button"
         >
           <LogOut size={16} /> Sign Out ({user?.name?.split(' ')[0]})
         </button>
