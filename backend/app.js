@@ -38,12 +38,25 @@ app.use(helmet());
 app.use(express.json({ limit: "1mb" }));
 
 // CORS configuration
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL,
-    credentials: true,
-  })
-);
+  const allowedOrigins = [
+    process.env.CLIENT_URL,
+    "http://localhost:5173",
+  ];
+
+  app.use(
+    cors({
+      origin: (origin, callback) => {
+        // Allow requests without an Origin header
+        // (for example, server-to-server or Postman).
+        if (!origin || allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+
+        return callback(new Error("Not allowed by CORS"));
+      },
+      credentials: true,
+    })
+  );
 
 // Parse cookies
 app.use(cookieParser());
