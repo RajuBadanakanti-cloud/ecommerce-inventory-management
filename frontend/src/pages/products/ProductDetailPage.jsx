@@ -17,6 +17,7 @@ import {
   LoaderCircle,
   ArrowLeft,
   LockKeyhole,
+  X,
 } from "lucide-react";
 import axiosInstance from "../../api/axiosInstance";
 
@@ -282,7 +283,46 @@ export default function ProductDetailPage() {
 
   return (
     <div className="min-h-screen bg-slate-50/50">
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">        {/* Breadcrumb */}
+      {/* Modern Top Floating Notification Popup Banner */}
+      {notice.message && (
+        <div className="sticky top-18 z-40 mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-8">
+          <div
+            role="alert"
+            aria-live="polite"
+            className={`flex items-center justify-between gap-3 rounded-2xl border px-5 py-4 text-xs sm:text-sm font-semibold shadow-xl transition-all animate-in slide-in-from-top-4 duration-300 ${
+              notice.type === "success"
+                ? "border-emerald-200 bg-emerald-50 text-emerald-900 shadow-emerald-900/10"
+                : "border-amber-200 bg-amber-50 text-amber-900 shadow-amber-900/10"
+            }`}
+          >
+            <div className="flex items-center gap-2.5 min-w-0">
+              {notice.type === "success" ? (
+                <CheckCircle2 size={18} className="shrink-0 text-emerald-600" />
+              ) : (
+                <LockKeyhole size={18} className="shrink-0 text-amber-600" />
+              )}
+              <p className="truncate">{notice.message}</p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() =>
+                setNotice({
+                  type: "",
+                  message: "",
+                })
+              }
+              className="shrink-0 rounded-xl p-1 text-slate-500 hover:bg-black/5 transition-colors"
+              aria-label="Dismiss notification"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-10">
+        {/* Breadcrumb */}
         <div className="mb-6 flex flex-wrap items-center gap-2 text-xs font-medium text-slate-500 sm:mb-8 sm:text-sm">
           <Link
             to="/"
@@ -547,7 +587,9 @@ export default function ProductDetailPage() {
               </div>
             </div>
           </div>
-        </div>        {/* Customer Reviews Section */}
+        </div>
+
+        {/* Customer Reviews Section */}
         <section className="mt-14 border-t border-slate-200 pt-10 sm:mt-20 sm:pt-16">
           <div className="mb-7 flex items-center gap-3 sm:mb-9">
             <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-600">
@@ -564,49 +606,6 @@ export default function ProductDetailPage() {
               </p>
             </div>
           </div>
-
-          {/* Inline Notification */}
-          {notice.message && (
-            <div
-              role="alert"
-              aria-live="polite"
-              className={`mb-6 flex items-start gap-3 rounded-xl border px-4 py-3 text-sm ${
-                notice.type === "success"
-                  ? "border-emerald-200 bg-emerald-50 text-emerald-800"
-                  : "border-amber-200 bg-amber-50 text-amber-900"
-              }`}
-            >
-              {notice.type === "success" ? (
-                <CheckCircle2
-                  size={18}
-                  className="mt-0.5 shrink-0"
-                />
-              ) : (
-                <LockKeyhole
-                  size={18}
-                  className="mt-0.5 shrink-0"
-                />
-              )}
-
-              <p className="min-w-0 flex-1">
-                {notice.message}
-              </p>
-
-              <button
-                type="button"
-                onClick={() =>
-                  setNotice({
-                    type: "",
-                    message: "",
-                  })
-                }
-                className="shrink-0 rounded-md px-1 font-bold opacity-70 transition hover:opacity-100"
-                aria-label="Dismiss notification"
-              >
-                ×
-              </button>
-            </div>
-          )}
 
           <div className="grid grid-cols-1 gap-7 lg:grid-cols-2 lg:gap-10">
             {/* Reviews List */}

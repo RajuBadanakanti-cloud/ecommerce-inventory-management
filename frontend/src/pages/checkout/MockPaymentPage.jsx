@@ -35,9 +35,9 @@ const createIdempotencyKey = (orderId) => {
 };
 
 const formatPrice = (amountInPaise) => {
-  return `₹${(Number(amountInPaise || 0) / 100).toLocaleString('en-IN', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
+  return `₹${(Number.parseInt((amountInPaise || 0) / 100)).toLocaleString('en-IN', {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 1
   })}`;
 };
 
@@ -800,8 +800,7 @@ export default function MockPaymentPage() {
                   <ShieldCheck size={16} className="mt-0.5 shrink-0" />
 
                   <p>
-                    Your order amount is calculated and verified by the
-                    backend server.
+                    Your order total is securely verified before payment.
                   </p>
 
                 </div>
