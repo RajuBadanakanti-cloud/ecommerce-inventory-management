@@ -14,12 +14,36 @@ export const protect = catchAsync(async (req, res, next) => {
             return next(new AppError("You are not logged in, Please login!", 401))
         }
 
-    // decode
-    let decode;
-    decode = await jwt.verify(token, process.env.JWT_ACCESS_SECRET)
-    if(!decode){
-        return next(new AppError("Your login failed or token expired!", 401))
-    }
+        // decode
+        let decode;
+        
+        try {
+        decode = jwt.verify(
+            token,
+            process.env.JWT_ACCESS_SECRET
+        );
+        } catch (error) {
+        if (error.name === "TokenExpiredError") {
+            return next(
+            new AppError(
+                "Your session has expired. Please wait while we verify your login.",
+                401
+            )
+            );
+        }
+
+        if (error.name === "JsonWebTokenError") {
+            return next(
+            new AppError(
+                "Your session is invalid. Please log in again.",
+                401
+            )
+            );
+        }
+
+        throw error;
+        }
+
 
     // customer
     const currentCustomer = await User.findById(decode.id) // imp

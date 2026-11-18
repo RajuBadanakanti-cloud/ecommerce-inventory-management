@@ -485,7 +485,7 @@ export const refreshAccessToken = catchAsync(async (req, res, next) => {
 
 
 // profile cheching >>
-export const getMe = catchAsync(async (req, res) => {
+export const getMe = catchAsync(async (req, res, next) => {
 
     const user = req.user;
     if(!user){

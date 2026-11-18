@@ -1,5 +1,4 @@
-
-
+// global error handler importtent fo finding errors
 const globalMiddleware = (err, req, res, next) =>{
         const statusCode = err.statusCode || 500
         return res.status(statusCode).json({
