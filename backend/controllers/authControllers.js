@@ -178,7 +178,6 @@ export const loginUser = catchAsync(async (req, res, next) => {
 
 // forgot password >>
 export const forgotPassword = catchAsync(async (req, res, next) => {
-
   const { email } = req.body;
 
   // Validate email
@@ -221,7 +220,7 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
 
   // Create reset URL
   const resetURL = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
-  console.log(resetURL, "<< RESET >>")
+  // console.log(resetURL, "<< RESET >>")
 
   // Send email
 
